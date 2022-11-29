@@ -8,4 +8,10 @@ build
 
 .vscode
 
-app/bin
+app/bin/*
+
+app/build/*
+
+app/out/*
+
+prediction-app/build/*

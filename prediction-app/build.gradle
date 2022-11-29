@@ -37,7 +37,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'CS643_Programming_Assignment2.Wine_Quality_Prediction'
+    mainClass = 'cs643.predictionapp.Wine_Quality_Prediction'
 }
 
 tasks.named('test') {

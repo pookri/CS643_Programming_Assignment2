@@ -1,4 +1,4 @@
-package CS643_Programming_Assignment2;
+package cs643.predictionspp;
 import java.io.IOException;
 
 import org.apache.spark.ml.PipelineModel;

@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'CS643_Programming_Assignment2'
-include('app')
+include('app', "prediction-app")
