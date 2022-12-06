@@ -20,7 +20,7 @@ public class Wine_Quality_Prediction {
         .option("multiline", true).option("quote", "\"")
         .option("inferSchema", true)
         .option("delimiter", ";")
-        .csv( "Data/TestDataset.csv" );
+        .csv( "app\\src\\main\\resources\\TestDataset.csv" );
 
         testdata = testdata.na().drop().cache();
 
@@ -30,8 +30,10 @@ public class Wine_Quality_Prediction {
             testdata=testdata.withColumnRenamed(name, name.replace('"', ' ').trim());
         }
         
-        PipelineModel pipelineModel = PipelineModel.load("logisticRegression");
-       
+        // PipelineModel pipelineModel = PipelineModel.load("app\\src\\main\\resources\\outputModel\\logisticRegression");
+        PipelineModel pipelineModel = PipelineModel.load("Data/outputModel/logisticRegression");
+
+
         Dataset<Row> validationPredict = pipelineModel.transform(testdata);
        
         MulticlassClassificationEvaluator f1Evaluator = new MulticlassClassificationEvaluator()
@@ -41,7 +43,7 @@ public class Wine_Quality_Prediction {
         MulticlassClassificationEvaluator accEvaluator = new MulticlassClassificationEvaluator()
         .setLabelCol("quality").setPredictionCol("prediction").setMetricName("accuracy");
         System.out.println("Accuracy score "+accEvaluator.evaluate(validationPredict));
- 
+        
         spark.stop();
     }
 

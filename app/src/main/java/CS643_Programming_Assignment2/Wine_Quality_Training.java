@@ -27,7 +27,7 @@ public class Wine_Quality_Training {
         .option("multiline", true).option("quote", "\"")
         .option("inferSchema", true)
         .option("delimiter", ";")
-        .csv( "traindata.csv" );
+        .csv( "app\\src\\main\\resources\\traindata.csv" );
 
         training = training.na().drop().cache();
         String[] headersTrain = training.schema().names();
@@ -66,7 +66,7 @@ public class Wine_Quality_Training {
         PipelineModel model = pipeline.fit(data.trainingData);
         
         // LogisticRegressionModel lrModel = (LogisticRegressionModel)(model.stages()[2]);
-        model.write().overwrite().save("logisticRegression");
+        model.write().overwrite().save("/Data/dm/outputModel/logisticRegression");
     }
 
     public static void main(String[] args) throws IOException {
