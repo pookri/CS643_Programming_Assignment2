@@ -6,15 +6,9 @@ import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
 import org.apache.spark.ml.feature.StandardScaler;
 import org.apache.spark.ml.feature.VectorAssembler;
-import org.apache.spark.ml.feature.VectorIndexer;
-import org.apache.spark.ml.feature.VectorIndexerModel;
-import org.apache.spark.ml.regression.DecisionTreeRegressor;
-import org.apache.spark.ml.regression.RandomForestRegressor;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-
-import spire.syntax.primitives;
 
 import org.apache.spark.ml.classification.*;
 
@@ -34,7 +28,7 @@ public class Wine_Quality_Training {
         .option("multiline", true).option("quote", "\"")
         .option("inferSchema", true)
         .option("delimiter", ";")
-        .csv( "app\\src\\main\\resources\\traindata.csv" );
+        .csv( "/Data/TrainingDataset.csv" );
 
         training = training.na().drop().cache();
         String[] headersTrain = training.schema().names();
@@ -72,8 +66,7 @@ public class Wine_Quality_Training {
         PipelineModel model = pipeline.fit(data.trainingData);
         
     
-        model.write().overwrite().save("app\\src\\main\\resources\\outputModel\\LogisticRegression");
-        // model.write().overwrite().save("/Data/dm/outputModel/logisticRegression");
+        model.write().overwrite().save("/Models/LogisticRegression");
     }
 
     public static void DecisionTreeModel(SparkSession spark) throws IOException{
@@ -88,26 +81,8 @@ public class Wine_Quality_Training {
         pipeline.setStages( new PipelineStage[]{data.assembler,data.scaler,decisionTreeClassifier});
         PipelineModel model = pipeline.fit(data.trainingData);
 
-        model.write().overwrite().save("app\\src\\main\\resources\\outputModel\\DecisionTreeClassifier");
+        model.write().overwrite().save("/Models/DecisionTreeClassifier");
        
-        // model.write().overwrite().save("/Data/dm/outputModel/DecisionTree");
-    }
-
-    public static void NavieBayesModel(SparkSession spark) throws IOException{
-
-        CommonData data = createPipeline(spark);
-
-        NaiveBayes naiveBayes = new NaiveBayes();
-
-        naiveBayes.setLabelCol("quality").setFeaturesCol("features");
-        Pipeline pipeline = new Pipeline();
-        
-        pipeline.setStages( new PipelineStage[]{data.assembler,data.scaler,naiveBayes});
-        PipelineModel model = pipeline.fit(data.trainingData);
-
-        model.write().overwrite().save("app\\src\\main\\resources\\outputModel\\NaiveBayesClassifier");
-        
-        // model.write().overwrite().save("/Data/dm/outputModel/DecisionTree");
     }
 
     public static void RandomForestModel(SparkSession spark) throws IOException{
@@ -122,25 +97,8 @@ public class Wine_Quality_Training {
         pipeline.setStages( new PipelineStage[]{data.assembler,data.scaler,rClassifier});
         PipelineModel model = pipeline.fit(data.trainingData);
 
-        model.write().overwrite().save("app\\src\\main\\resources\\outputModel\\RandomForestClassifier");
-        
-        // model.write().overwrite().save("/Data/dm/outputModel/DecisionTree");
-    }
-
-    public static void DecisionTreeRegressorModel(SparkSession spark) throws IOException{
-
-        CommonData data = createPipeline(spark);
-
-        DecisionTreeRegressor decisionTreeRegressor = new DecisionTreeRegressor();
-
-        decisionTreeRegressor.setLabelCol("quality").setFeaturesCol("features");
-        Pipeline pipeline = new Pipeline();
-        
-        pipeline.setStages( new PipelineStage[]{data.assembler,data.scaler,decisionTreeRegressor});
-        PipelineModel model = pipeline.fit(data.trainingData);
-
-        model.write().overwrite().save("app\\src\\main\\resources\\outputModel\\DecisionTreeRegressor");
-        // model.write().overwrite().save("/Data/dm/outputModel/DecisionTree");
+        model.write().overwrite().save("/Models/RandomForestClassifier");
+    
     }
 
     public static void main(String[] args) throws IOException {
@@ -148,9 +106,7 @@ public class Wine_Quality_Training {
         SparkSession spark = SparkSession.builder().appName("JavaLinerRegressionModel").master("local").getOrCreate();    
         logisticRegrssionModel(spark);
         DecisionTreeModel(spark);
-        // NavieBayesModel(spark);
         RandomForestModel(spark);
-        DecisionTreeRegressorModel(spark);
         spark.stop();
     }
 
