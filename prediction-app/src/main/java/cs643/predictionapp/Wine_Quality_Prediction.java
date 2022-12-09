@@ -13,7 +13,7 @@ public class Wine_Quality_Prediction {
 
     public static void main(String[] args) throws IOException {
 
-        SparkSession spark = SparkSession.builder().appName("JavaLinerRegressionModel").master("local").getOrCreate();    
+        SparkSession spark = SparkSession.builder().appName("Pooja_Wine_Quality_Prediction_app").master("local").getOrCreate();    
       
         Dataset<Row> testdata = spark.read()
         .option("header", true)
@@ -29,7 +29,7 @@ public class Wine_Quality_Prediction {
         for (String name : headersTrain){ 
             testdata=testdata.withColumnRenamed(name, name.replace('"', ' ').trim());
         }
-
+        
         printModel("/Models/LogisticRegression", testdata, "Logistic Regression");
         printModel("/Models/DecisionTreeClassifier", testdata, "Descision Tree Classifier");        
         printModel("/Models/RandomForestClassifier", testdata, "Random Forest Classifier");
@@ -38,16 +38,19 @@ public class Wine_Quality_Prediction {
     }
 
     private static void printModel(String path, Dataset<Row> testdata, String usingModel) { 
+        System.out.println("Prediction-app Running");
         PipelineModel pipelineModel = PipelineModel.load(path);
-        Dataset<Row> validationPredict = pipelineModel.transform(testdata);
-        System.out.println("Prediction Using Model " + usingModel);
+        Dataset<Row> testDataPredict = pipelineModel.transform(testdata).cache();
+        System.out.println("Prediction Using " + usingModel + " Model");
+        System.out.println();
+        System.out.println("TestDataset Metrics \n");
         MulticlassClassificationEvaluator f1Evaluator = new MulticlassClassificationEvaluator()
         .setLabelCol("quality").setPredictionCol("prediction").setMetricName("f1");
-        System.out.println("F1 score "+f1Evaluator.evaluate(validationPredict));
+        System.out.println("F1 score "+f1Evaluator.evaluate(testDataPredict));
         
         MulticlassClassificationEvaluator accEvaluator = new MulticlassClassificationEvaluator()
         .setLabelCol("quality").setPredictionCol("prediction").setMetricName("accuracy");
-        System.out.println("Accuracy score "+accEvaluator.evaluate(validationPredict));
+        System.out.println("Accuracy score "+accEvaluator.evaluate(testDataPredict));
         
         System.out.println("-----------------------------------------------");
     

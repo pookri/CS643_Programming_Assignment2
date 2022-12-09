@@ -42,7 +42,7 @@ application {
     mainClass = 'CS643_Programming_Assignment2.Wine_Quality_Training'
 }
 
-tasks.named('test') {
-    // Use TestNG for unit tests.
-    useTestNG()
-}
+// tasks.named('test') {
+//     // Use TestNG for unit tests.
+//     useTestNG()
+// }
