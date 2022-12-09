@@ -1,4 +1,4 @@
-package cs643.predictionspp;
+package cs643.predictionapp;
 import java.io.IOException;
 
 import org.apache.spark.ml.PipelineModel;
@@ -6,6 +6,8 @@ import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+
+import spire.syntax.primitives;
 
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 
@@ -20,7 +22,8 @@ public class Wine_Quality_Prediction {
         .option("multiline", true).option("quote", "\"")
         .option("inferSchema", true)
         .option("delimiter", ";")
-        .csv( "Data/TestDataset.csv" );
+        .csv( "/Data/TestDataset.csv" );
+        // .csv( "prediction-app\\src\\main\\resources\\TestDataset2.csv" );
 
         testdata = testdata.na().drop().cache();
 
@@ -29,20 +32,41 @@ public class Wine_Quality_Prediction {
         for (String name : headersTrain){ 
             testdata=testdata.withColumnRenamed(name, name.replace('"', ' ').trim());
         }
-        
-        PipelineModel pipelineModel = PipelineModel.load("logisticRegression");
+
+        printModel("/Models/LogisticRegression", testdata, "Logistic Regression");
+        printModel("/Models/DecisionTreeRegressor", testdata, "Descision Tree Regressor");
+        printModel("/Models/DecisionTreeClassifier", testdata, "Descision Tree Classifier");        
+        printModel("/Models/RandomForestClassifier", testdata, "Random Forest Classifier");
+        // printModel("/Data/", testdata, "Logistic Regression");
+        // PipelineModel pipelineModel = PipelineModel.load("/Data/LogisticRegression");
+    
+        // Dataset<Row> validationPredict = pipelineModel.transform(testdata);
        
+        // MulticlassClassificationEvaluator f1Evaluator = new MulticlassClassificationEvaluator()
+        // .setLabelCol("quality").setPredictionCol("prediction").setMetricName("f1");
+        // System.out.println("F1 score "+f1Evaluator.evaluate(validationPredict));
+
+        // MulticlassClassificationEvaluator accEvaluator = new MulticlassClassificationEvaluator()
+        // .setLabelCol("quality").setPredictionCol("prediction").setMetricName("accuracy");
+        // System.out.println("Accuracy score "+accEvaluator.evaluate(validationPredict));
+ 
+        spark.stop();
+    }
+
+    private static void printModel(String path, Dataset<Row> testdata, String usingModel) { 
+        PipelineModel pipelineModel = PipelineModel.load(path);
         Dataset<Row> validationPredict = pipelineModel.transform(testdata);
-       
+        System.out.println("Prediction Using Model " + usingModel);
         MulticlassClassificationEvaluator f1Evaluator = new MulticlassClassificationEvaluator()
         .setLabelCol("quality").setPredictionCol("prediction").setMetricName("f1");
         System.out.println("F1 score "+f1Evaluator.evaluate(validationPredict));
-
+        
         MulticlassClassificationEvaluator accEvaluator = new MulticlassClassificationEvaluator()
         .setLabelCol("quality").setPredictionCol("prediction").setMetricName("accuracy");
         System.out.println("Accuracy score "+accEvaluator.evaluate(validationPredict));
- 
-        spark.stop();
+        
+        System.out.println("-----------------------------------------------");
+    
     }
 
 

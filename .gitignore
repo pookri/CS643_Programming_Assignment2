@@ -15,3 +15,7 @@ app/build/*
 app/out/*
 
 prediction-app/build/*
+
+prediction-app/bin/*
+
+prediction-app/out/*
