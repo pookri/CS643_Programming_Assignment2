@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  app:
+    container_name: prediction-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ps245_wine_quality:latest
+    volumes:
+      - ./myVolume/poojaData.csv:/Data/TestDataset.csv
+    
